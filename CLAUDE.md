@@ -160,23 +160,6 @@ Before any git operation, verify:
 - [ ] `gh pr list` / `gh pr view` - PR status
 - [ ] Read related files - Templates, configs, etc.
 
-### Terminal Environment Adaptation
-
-Unlike IDEs, terminals lack visual context, so:
-
-1. **Explicit exploration** - Verify everything explicitly
-2. **Manual state tracking** - Make `git status`, `git log` a habit
-3. **Proactive reading** - Read related files in advance
-4. **Path verification** - Use find/glob instead of guessing file locations
-
-### Self-Verification Questions
-
-Before acting, ask yourself:
-- "Can I verify this with a tool?" → Then verify
-- "Do I know the base state?" → If not, git diff
-- "Am I certain where the file is?" → If not, find/glob
-- "Does the user already know the answer?" → Then don't ask, just verify
-
 ## Git Safety Rules
 
 ### Claude MAY execute (each still triggers a confirmation prompt — never auto-run, never bypass the prompt)
@@ -215,6 +198,15 @@ Before any git execution, briefly state what the command does. Read-only git (`s
 **포함하지 말 것:**
 - 작업 과정, 워크플로우 단계
 - 품질 점수, 검증 세부사항
+
+## 이 설정 저장소
+
+`~/.claude` 는 git 작업 트리다. 편집하면 즉시 반영된다.
+
+- 설정을 고치면 동작을 확인한 뒤 커밋한다. 확인 전에 커밋하지 않는다
+- `mcp.json` 또는 `settings.shared.json` 을 바꾸면 `~/.claude/bootstrap.sh` 를 다시 실행한다
+- 추적 대상은 `.gitignore` 가 정본이다. 런타임 파일은 추적하지 않는다
+- 자격증명은 커밋하지 않고 `${VAR}` 참조로 둔다
 
 ## MCP Settings Location
 
