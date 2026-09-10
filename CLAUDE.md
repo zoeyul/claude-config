@@ -1,52 +1,21 @@
 # Claude Code Global Configuration
 
 ## Core Principles
-- ⛔ **Do NOT perform unnecessary tasks** - Only execute what the user explicitly requests. Do not add extra validations, checks, or "helpful" additional work unless asked.
-- ⛔ **Evidence only — never act or conclude on assumption/speculation.** Every claim, diagnosis, and action must be backed by verification: actual output, code, logs, data, or official/community docs. Do NOT guess causes, do NOT state "probably/likely" as if fact, do NOT take actions (restart, delete, deploy, toggle) based on an unverified assumption.
-  - Before any action: the reason must be explicit, and the execution direction must be verified first (confirm the current state, confirm the command/approach is correct).
-  - When you don't have proof, say so plainly ("I have not verified X") instead of filling the gap with a guess. Distinguish "confirmed by data" from "consistent-but-unproven."
-  - When knowledge is uncertain (library/SDK behavior, APIs, errors), check official docs and community sources (문서 조회 MCP, WebFetch, 웹 검색) rather than relying on memory.
-  - If a hypothesis isn't yet proven, design a check that produces evidence, run it, then decide — do not commit to the fix as if the cause were confirmed.
-
-## Revert Rule
-
-유저가 "아니", "아니야", "아닌데", "그거 아니라고" 등 부정/거부 의사를 표현하면,
-직전에 변경한 내용을 즉시 되돌린다. 추가 질문 없이 바로 revert.
-
-## Partial Edit Rule
-
-지적받은 부분만 고친다. 파일 전체를 다시 쓰지 않는다.
-전체 재작성은 지적하지 않은 내용까지 바꾸거나 삭제한다.
-수정 범위를 넓혀야 한다면 먼저 확인을 받는다.
+- ⛔ **불필요한 작업을 하지 않는다.** 요청받은 것만 실행한다. 추가 검증·점검·"도움이 될 것 같은" 작업을 임의로 붙이지 않는다.
+- ⛔ **추측으로 행동하거나 결론짓지 않는다.** 모든 주장·진단·행동은 실행 결과, 코드, 로그, 데이터, 공식 문서로 뒷받침한다. 원인을 추측하지 않고, "아마·~일 것이다"를 사실처럼 말하지 않으며, 검증 안 된 가정으로 재시작·삭제·배포·설정 변경을 하지 않는다.
+  - 행동 전에 이유를 명시하고 방향을 먼저 검증한다. 현재 상태와 명령·접근법이 맞는지 확인한다.
+  - 근거가 없으면 "확인하지 않았다"고 그대로 말한다. "데이터로 확인됨"과 "말은 되지만 미검증"을 구분한다.
+  - 라이브러리·API·에러 동작이 불확실하면 기억에 의존하지 않고 공식 문서와 커뮤니티 자료를 확인한다.
+  - 가설이 검증되지 않았으면 증거를 만드는 검사를 설계해 실행한 뒤 결정한다. 원인이 확정된 것처럼 수정을 확정하지 않는다.
 
 ## Code Style & Terminology
 
-**Use professional technical terminology:**
-- Use standard industry terms (e.g., "connection string", "individual parameters", "composite key")
-- Avoid colloquial or informal terms (e.g., "통짜", "조각", "뭉탱이")
-- When a concept has an established English technical term, use it (even in Korean comments)
-- Be precise: use domain-specific vocabulary from databases, networking, cloud services, etc.
+적용 범위: 문서·주석·커밋 메시지·PR 본문.
 
-**Examples:**
-- ✅ "connection string" or "DATABASE_URL"
-- ❌ "통짜 URL"
-- ✅ "개별 매개변수" or "individual parameters"
-- ❌ "조각"
-- ✅ "task definition revision"
-- ❌ "태스크 정의 버전"
-
-**적용 범위**: 문서·주석·커밋 메시지·PR 본문.
-
-- 비유로 대체하지 않는다: "문 두 개", "이 길로 온다", "붙는다", "실어 보낸다" 등.
-- 감상·강조 표현을 쓰지 않는다: "~라 다행이다", "진짜", "통째로 날아간다" 등.
-- 도메인 용어는 팀이 쓰는 표기를 따른다(예: dev·qa·prod, actor, 매니페스트).
-- 사실만 적는다. 설명이 필요하면 근거(파일·설정·코드 위치)를 붙인다.
-
-**의존성 이름을 넣지 않는다.**
-
-문서와 스크립트에 특정 도구·플러그인·프로젝트·환경변수 이름을 넣지 않는다.
-그 대상이 바뀌면 문서도 함께 고쳐야 하고, 머신마다 달라진다.
-설정 파일이 정본이고, 스크립트는 거기서 읽는다.
+- 정식 기술 용어를 쓴다. 구어체·비유·감상 표현을 쓰지 않는다.
+- 도메인 용어는 팀 표기를 따른다.
+- 사실만 적는다. 설명이 필요하면 근거를 붙인다.
+- 특정 도구·플러그인·프로젝트·환경변수 이름을 넣지 않는다. 설정 파일이 정본이고 스크립트는 거기서 읽는다.
 
 ## 주석
 
@@ -97,12 +66,6 @@ git diff | grep -E "^\+\s*(//|#|\*|/\*)"
 
 ### Spec과의 관계
 
-```
-Spec (큰 단위 설계)
-  ↓
-Task Management (상세 실행 추적)
-```
-
 - Spec: 전체 작업 설계 (Requirements/Design/Tasks)
 - Task Management: Spec 참조 + 진행 상황 기록
 
@@ -111,93 +74,29 @@ Task Management (상세 실행 추적)
 - **"태스크에서 {키워드}"** → `/task-find` 로 검색
 - 작업 시작·완료·중단 시 해당 커맨드로 상태 전이. 상세 동작은 `commands/task-*.md` 가 정본이다
 
-### 수동 커맨드 (필요시)
-
-- `/task-new` - 새 작업 등록
-- `/task-done <name>` - 명시적 완료 처리
-- `/task-archive <name>` - 중단 처리
-- `/task-list` - 진행 중 목록
-
-### vs ~/code/docs
-
-- **tasks**: 작업 관리 (큰 작업, 진행 상황)
-- **docs**: 기술 문서 (장기, 참고 자료)
-
 ## CLAUDE.md Maintenance Rules
 
-### ALWAYS Use claude-md-improver Plugin for CLAUDE.md Audits
-**CRITICAL: When the user asks to audit, check, improve, or fix CLAUDE.md files, you MUST use the claude-md-improver skill.**
-
-**The skill follows a mandatory 5-phase workflow:**
-1. **Phase 1: Discovery** - Find all CLAUDE.md files
-2. **Phase 2: Quality Assessment** - Evaluate each file against quality criteria with scoring
-3. **Phase 3: Quality Report Output** - **ALWAYS output the full quality report BEFORE making any updates**
-4. **Phase 4: Targeted Updates** - Propose specific additions (get user approval)
-5. **Phase 5: Apply Updates** - Apply approved changes
-
-**Never skip Phase 3 (Quality Report).** Do NOT manually verify or make changes without running the proper skill workflow.
-
-## Work Process & Decision Making
-
-### Think-Act Protocol
-
-Every task must follow this process:
-
-1. **STOP & THINK**
-   - What is the goal?
-   - What information do I need?
-   - What is the current state?
-
-2. **GATHER**
-   - Read relevant files
-   - Check state (git status, git diff, git log)
-   - Review existing patterns
-   - Check PR/issue status (gh pr list, gh pr view)
-
-3. **ANALYZE**
-   - Define the problem
-   - Set direction
-   - Establish verification criteria
-
-4. **EXECUTE**
-   - Implement the plan
-
-5. **VERIFY**
-   - Confirm results
-   - Review from user perspective
-
-6. **ASK (only when necessary)**
-   - Ask ONLY for decisions that truly require judgment
-   - NEVER ask for information that tools can provide
-
-### Git Operations Checklist
-
-Before any git operation, verify:
-- [ ] `git status` - Current branch and changes
-- [ ] `git log --graph --all` - Branch structure
-- [ ] `git diff --stat origin/<base>` - Compare with base
-- [ ] `gh pr list` / `gh pr view` - PR status
-- [ ] Read related files - Templates, configs, etc.
+CLAUDE.md 감사·개선 요청이 오면 `claude-md-improver` 스킬을 사용한다. 직접 검토하거나 수정하지 않는다.
 
 ## Git Safety Rules
 
-### Claude MAY execute (each still triggers a confirmation prompt — never auto-run, never bypass the prompt)
-- Creating a **new** branch (`git switch -c` / `git checkout -b`)
-- Switching to an **existing** branch (`git switch <name>` / `git checkout <name>`, no file paths)
-- `git add` (stage specific files, not `-A`/`.` blindly)
+### 실행 가능 (매번 확인 프롬프트를 거친다. 자동 실행하거나 프롬프트를 우회하지 않는다)
+- 새 브랜치 생성 (`git switch -c` / `git checkout -b`)
+- 기존 브랜치로 전환 (`git switch <name>` / `git checkout <name>`, 파일 경로 없이)
+- `git add` — 파일을 지정해서 스테이징한다. `-A` / `.` 를 무분별하게 쓰지 않는다
 - `git commit`
-- `git push` of a **feature branch** (non-main/master, no `--force`/`--force-with-lease`)
-- Creating a PR (`gh pr create`)
+- feature 브랜치 `git push` — main/master 가 아니고 `--force` 계열이 없을 때
+- PR 생성 (`gh pr create`)
 
-### Claude MUST NOT execute without explicit per-instance user permission (explain + provide the command instead)
-- ⛔ `git reset` (any form: `--hard`, `--soft`, `HEAD`, etc.)
+### 개별 허락 없이 실행 금지 (설명하고 명령을 제시한다)
+- ⛔ `git reset` — `--hard`, `--soft`, `HEAD` 등 모든 형태
 - ⛔ `git commit --amend`, `git rebase -i`, squash — 히스토리를 다시 쓰는 모든 작업
-- ⛔ Force-push (`--force` / `--force-with-lease`) or any push to `main`/`master`
-- ⛔ `git checkout` / `git switch` used to **discard or restore files** (e.g. `git checkout -- <path>`, `git switch -- <path>`)
-- ⛔ `git branch -d`/`-D`/`-m`, `git tag` create/delete
+- ⛔ force-push (`--force` / `--force-with-lease`), `main`/`master` 로의 모든 push
+- ⛔ 파일을 되돌리는 `git checkout` / `git switch` (예: `git checkout -- <path>`)
+- ⛔ `git branch -d`/`-D`/`-m`, `git tag` 생성·삭제
 - ⛔ `git merge`, `git rebase`, `git pull`, `git stash`, `git cherry-pick`, `git revert`, `git clean`
 
-Before any git execution, briefly state what the command does. Read-only git (`status`, `log`, `diff`, `show`, `ls-files`, `branch` listing) is always fine.
+git 명령 실행 전에 그 명령이 무엇을 하는지 간단히 말한다. 읽기 전용 git(`status`, `log`, `diff`, `show`, `ls-files`, `branch` 조회)은 제한 없다.
 
 ### 커밋 메시지
 
@@ -252,8 +151,7 @@ Before any git execution, briefly state what the command does. Read-only git (`s
 
 **모든 작업은 반드시 Spec을 작성한 후 시작합니다.**
 
-예외: 단일 파일 수정, 오타 교정처럼 되돌리기 쉬운 작업은 Spec 없이 진행한다.
-`Core Principles` 의 "불필요한 작업 금지" 가 우선한다.
+예외: 단일 파일 수정, 오타 교정처럼 되돌리기 쉬운 작업은 Spec 없이 진행한다. `Core Principles` 의 "불필요한 작업 금지" 가 우선한다.
 
 Spec 작성·검증·갱신 절차와 EARS 형식은 `/spec-driven` 스킬이 정본이다.
 
@@ -268,39 +166,13 @@ Spec 작성·검증·갱신 절차와 EARS 형식은 `/spec-driven` 스킬이 �
 - 큰 작업: 상세 Spec (Requirements/Design/Tasks)
 
 **Task Management 등록 (선택, 사용자 결정):**
-- 다음 중 하나면 "Task Management에 등록할까요?" 제안:
-  - 마이그레이션
-  - 대규모 리팩토링
-  - 신규 기능 개발
-  - 예상 작업 시간 1시간 이상
-- 사용자 승인 후 등록
+- `Task Management` 의 대상 작업에 해당하면 등록 여부를 제안하고, 승인 후 등록
 
-### Spec 위반 방지
-
-**금지 사항:**
-- ❌ Spec 없이 작업 시작
-- ❌ EARS 형식이 아닌 요구사항
-- ❌ Spec과 다른 방향으로 진행
-- ❌ Acceptance Criteria 검증 없이 완료 선언
-
-**필수 사항:**
-- ✅ 작업 전 Spec 문서 작성
-- ✅ 작업 중 Spec 지속적 참조
-- ✅ 방향 바뀌면 Spec 업데이트 후 계속
-- ✅ 완료 시 모든 AC 충족 검증
-
-### Spec 검증 체크리스트
-
-작업 완료 전:
-1. [ ] Requirements의 모든 AC 충족
-2. [ ] Design의 해결 방향대로 구현
-3. [ ] Critical Files 모두 수정
-4. [ ] 실제 구현이 Spec과 일치
-5. [ ] 테스트 또는 검증 완료
+작업 전 Spec 을 작성하고, 작업 중 지속적으로 참조한다. 방향이 바뀌면 Spec 을 갱신한 뒤 계속한다. 완료 선언 전 `/spec-driven verify` 로 모든 AC 충족을 검증한다.
 
 ### Plan Mode 사용 규칙
 
-**CRITICAL: Plan Mode에서는 Plan 파일만 수정**
+**Plan Mode 에서는 Plan 파일만 수정한다.**
 
 - ✅ **Plan Mode 내**: Plan 파일 자체만 수정
 - ✅ **Plan Mode 종료 후**: Spec 파일 생성/수정
