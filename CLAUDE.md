@@ -179,6 +179,20 @@ Before any git operation, verify:
 
 Before any git execution, briefly state what the command does. Read-only git (`status`, `log`, `diff`, `show`, `ls-files`, `branch` listing) is always fine.
 
+### 커밋 메시지
+
+- 변경 내용만 적는다. 과정·프로세스("코드리뷰 반영" 등)를 넣지 않는다
+- 커밋 전 `/code-review` 를 실행하고 findings 를 처리한다
+
+### 코드리뷰 결과 수용 기준
+
+리뷰 전에 그 변경의 계약(하기로 한 것)을 한 문단으로 적고 리뷰에 준다.
+
+- **받아들인다**: 계약을 깨는 것, 조용히 잘못 동작하는 것
+- **후속으로 넘긴다**: 구조 제안, 이 변경이 만들지 않은 기존 조건, 취향
+
+리뷰는 증명이 아니라 표본이다. 0건이 나올 때까지 돌리지 않는다.
+
 ## Pull Request Guidelines
 
 **CRITICAL: PR은 베이스 브랜치와의 DIFF를 설명하는 것이지, 작업 과정을 설명하는 게 아님**
