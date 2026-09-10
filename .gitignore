@@ -1,0 +1,54 @@
+# ~/.claude 는 런타임 데이터가 계속 쌓이는 디렉토리다.
+# 전부 제외한 뒤 추적 대상만 화이트리스트한다.
+# 새 런타임 디렉토리가 생겨도 자동으로 걸러진다.
+
+*
+!*/
+
+# --- 추적 대상 ---
+!.gitignore
+!README.md
+!bootstrap.sh
+!CLAUDE.md
+!mcp.json
+!settings.shared.json
+!keybindings.json
+
+!commands/**
+!skills/**
+!agents/**
+!rules/**
+!output-styles/**
+!themes/**
+
+# 훅은 직접 작성한 것만 개별 화이트리스트한다.
+# 도구가 설치하고 스스로 덮어쓰는 훅은 자동으로 제외된다.
+# 예: !hooks/my-hook.sh
+
+# --- 화이트리스트보다 우선하는 제외 ---
+
+# 런타임 설정. Claude Code 와 외부 도구가 상시 갱신한다.
+# 공유 대상은 settings.shared.json 에 두고 bootstrap.sh 가 병합한다.
+settings.json
+settings.local.json
+
+# 플러그인 설치본. 마켓플레이스에서 재설치된다.
+plugins/
+
+# 자격증명
+.credentials.json
+credentials.json
+*.key
+*.pem
+*.p12
+*.pfx
+*.token
+
+# 백업
+*.bak
+*.bak.*
+*.backup
+*.backup.*
+
+# OS
+.DS_Store
