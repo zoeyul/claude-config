@@ -48,6 +48,21 @@
 그 대상이 바뀌면 문서도 함께 고쳐야 하고, 머신마다 달라진다.
 설정 파일이 정본이고, 스크립트는 거기서 읽는다.
 
+## 주석
+
+주석은 why 가 비자명할 때만 적는다. 기본값은 주석 없음.
+
+- **적지 않는다**: 코드를 보면 아는 것(what), 사용법, 내부 계획(로드맵·태스크 번호·PRD), 설계 논의, 리뷰에서 나온 얘기
+- **적는다**: 코드만 봐서는 알 수 없는 라이브러리·프레임워크 동작, 순서를 바꾸면 깨지는 이유
+
+판단 질문은 하나 — "이게 없으면 다음 사람이 코드를 잘못 고칠까?"
+
+커밋 전 기계적으로 확인한다. 리뷰 지적을 고친 직후에 그 근거를 주석으로 옮겨 적는 습관이 나온다.
+
+```bash
+git diff | grep -E "^\+\s*(//|#|\*|/\*)"
+```
+
 ## Task Management
 
 **큰 작업만 `~/code/tasks/`에서 장기 추적합니다.**
@@ -172,6 +187,7 @@ Before any git operation, verify:
 
 ### Claude MUST NOT execute without explicit per-instance user permission (explain + provide the command instead)
 - ⛔ `git reset` (any form: `--hard`, `--soft`, `HEAD`, etc.)
+- ⛔ `git commit --amend`, `git rebase -i`, squash — 히스토리를 다시 쓰는 모든 작업
 - ⛔ Force-push (`--force` / `--force-with-lease`) or any push to `main`/`master`
 - ⛔ `git checkout` / `git switch` used to **discard or restore files** (e.g. `git checkout -- <path>`, `git switch -- <path>`)
 - ⛔ `git branch -d`/`-D`/`-m`, `git tag` create/delete
