@@ -36,9 +36,16 @@ apply_settings() {
   echo "  settings.shared.json -> settings.json (병합)"
 }
 
+# CLAUDE.md 와 커맨드가 전제하는 작업 디렉토리를 만든다.
+prepare_dirs() {
+  mkdir -p "$HOME/code/tasks" "$HOME/code/docs"
+  echo "  작업 디렉토리 확인 (~/code/tasks, ~/code/docs)"
+}
+
 echo "Claude 설정 적용"
 apply_mcp
 apply_settings
+prepare_dirs
 
 # mcp.json 이 참조하는 환경변수 중 미설정인 것을 알린다.
 report_unset_vars() {

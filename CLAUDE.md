@@ -76,24 +76,6 @@
 └── backend/
 ```
 
-### 작업 파일 내용
-
-```markdown
-# <task-name>.md
-
-## Spec
-~/.claude/plans/<task-name>.md 참조
-
-## 진행 상황
-- [x] Task 1: 의존성 업데이트 (커밋: abc123)
-- [ ] Task 2: 네이티브 빌드 테스트
-- [ ] Task 3: QA 검증
-
-## 메모
-- Gradle 8.0 필요 (공식 문서 틀림)
-- iOS 빌드는 문제없음
-```
-
 ### Spec과의 관계
 
 ```
@@ -105,41 +87,10 @@ Task Management (상세 실행 추적)
 - Spec: 전체 작업 설계 (Requirements/Design/Tasks)
 - Task Management: Spec 참조 + 진행 상황 기록
 
-### "태스크에서" 키워드 인식
+### 트리거
 
-사용자가 **"태스크에서 {키워드}"**라고 하면:
-
-1. `~/code/tasks` 전체에서 키워드로 검색:
-   ```bash
-   find ~/code/tasks -name "*{키워드}*.md"
-   find ~/code/tasks -name "*.md" | xargs grep -l "{키워드}"
-   ```
-
-2. 찾은 파일들 목록 보여주기
-3. 관련성 높은 파일 Read (여러 개면 모두 읽기)
-4. 상태(todo/in-progress/done/archive) 관계없이 검색
-5. 내용 파악 후 응답
-
-### 자동 업데이트 (기본)
-
-작업 진행 중 **자동으로** 해당 작업 파일을 업데이트:
-
-1. **작업 시작 시**:
-   - `todo/` → `in-progress/`로 이동
-   - **시작일** 추가
-
-2. **진행 중**:
-   - 커밋 생성 시 "진행 상황" 체크박스 업데이트
-   - 주요 결정사항 "메모" 섹션에 추가
-
-3. **작업 완료 시**:
-   - `in-progress/` → `done/YYYY-MM/`로 이동
-   - **상태**: done, **완료일** 추가
-   - 관련 커밋 해시 추가
-   - 모든 체크박스 완료 처리
-
-4. **작업 중단 시**:
-   - 사용자가 명시하면 `archive/`로 이동
+- **"태스크에서 {키워드}"** → `/task-find` 로 검색
+- 작업 시작·완료·중단 시 해당 커맨드로 상태 전이. 상세 동작은 `commands/task-*.md` 가 정본이다
 
 ### 수동 커맨드 (필요시)
 
@@ -275,82 +226,13 @@ Before any git execution, briefly state what the command does. Read-only git (`s
 
 **모든 작업은 반드시 Spec을 작성한 후 시작합니다.**
 
-작업 방향을 잃지 않고, 계획대로 진행하기 위한 필수 원칙입니다.
+예외: 단일 파일 수정, 오타 교정처럼 되돌리기 쉬운 작업은 Spec 없이 진행한다.
+`Core Principles` 의 "불필요한 작업 금지" 가 우선한다.
 
-### 사용자 워크플로우
+Spec 작성·검증·갱신 절차와 EARS 형식은 `/spec-driven` 스킬이 정본이다.
 
-**모든 작업 (크든 작든):**
-1. 사용자가 작업 내용 설명하거나 "spec 작성해" 요청
-2. Claude가 Spec 작성 (`~/.claude/plans/<task-name>.md`)
-3. 사용자가 Spec 확인/승인 후 작업 시작
-4. 작업 중 Spec 참조하여 방향 유지
-5. 완료 후 Spec 삭제 (또는 `.claude/specs/`에 영구 보관)
-
-**큰 작업만 추가로 (마이그레이션, 대규모 리팩토링, 신규 기능):**
-- Claude가 "Task Management에 등록할까요?" 제안
-- 또는 사용자가 "태스크 등록해" 명시
-- `~/code/tasks/.../in-progress/<task-name>.md` 생성
-- Spec 참조 + 진행 상황 기록
-- 완료 후 `done/YYYY-MM/` 이동
-
-### Spec 파일 구조
-
-**단일 파일 형식:**
-- 위치: `~/.claude/plans/<task-name>.md` (임시) 또는 `<project-root>/.claude/specs/<task-name>.md` (영구)
-
-**3단계 구조:**
-
-1. **Requirements 섹션**
-   - EARS 형식으로 요구사항 작성
-   - User Story + Acceptance Criteria
-   - 작은 작업: 간단한 AC (1-3개)
-   - 큰 작업: 상세한 AC + Additional Details
-
-2. **Design 섹션**
-   - 문제 분석
-   - 해결 방향 (왜 이 방법을 선택했는지)
-   - Critical Files 식별
-   - 작은 작업: 간단한 접근 방법
-   - 큰 작업: 기술적 접근 + 대안 비교
-
-3. **Tasks 섹션**
-   - 실행 가능한 작업 단위로 분해
-   - Requirements AC와 추적성 유지
-   - 작은 작업: 체크리스트 (3-5개)
-   - 큰 작업: Task별 상태/의존성 명시
-
-### EARS 형식 (필수)
-
-모든 Acceptance Criteria는 다음 형식 중 하나를 따라야 함:
-- `WHEN [조건/이벤트] THEN [시스템] SHALL [기대 동작]`
-- `IF [조건/상태] THEN [시스템] SHALL [필수 동작]`
-- `WHERE [컨텍스트] [시스템] SHALL [컨텍스트별 동작]`
-- `WHILE [진행 중 조건] [시스템] SHALL [지속 동작]`
-
-**예시:**
-```markdown
-## Requirements
-
-### 버그: 캐러셀 스와이프 안 됨
-
-#### Acceptance Criteria
-1. WHEN 사용자가 캐러셀을 스와이프할 때 THEN THE SYSTEM SHALL 다음 아이템으로 넘어가야 함
-2. WHERE reanimated-carousel v5를 사용할 때 THE SYSTEM SHALL 공식 API를 따라야 함
-
-## Design
-
-### 원인
-reanimated-carousel v4→v5 마이그레이션 시 API 변경 미적용
-
-### 해결 방향
-1. 공식 마이그레이션 가이드 확인
-2. onSnapToItem → onScrollEnd API 변경
-3. 안 되면 enableMomentum 옵션 확인
-
-### 금지
-- ❌ 다른 라이브러리로 교체
-- ❌ 우회 (근본 원인 해결 필수)
-```
+- 임시 Spec: `~/.claude/plans/<task-name>.md`
+- 영구 Spec: `<project-root>/.claude/specs/<task-name>.md`
 
 ### Claude 자동 판단 규칙
 
