@@ -148,14 +148,19 @@ if ! scan; then
   exit 1
 fi
 
+# 변경 내용만 적는다. 범위가 넓으면 경로를 나열하지 않고 개수로 요약한다.
 compose_message() {
-  local n="${#PATHS[@]}"
+  local n="${#PATHS[@]}" scopes count
   if [ "$n" -eq 1 ]; then
     printf '%s 수정' "${PATHS[0]}"
+    return
+  fi
+  scopes="$(printf '%s\n' "${PATHS[@]}" | sed 's#/.*##' | sort -u)"
+  count="$(printf '%s\n' "$scopes" | wc -l | tr -d ' ')"
+  if [ "$count" -le 3 ]; then
+    printf '%s 수정 (%d개 파일)' "$(printf '%s\n' "$scopes" | paste -sd, -)" "$n"
   else
-    local scopes
-    scopes="$(printf '%s\n' "${PATHS[@]}" | sed 's#/.*##' | sort -u | paste -sd, -)"
-    printf '%s 수정 (%d개 파일)' "$scopes" "$n"
+    printf '설정 %d개 파일 수정' "$n"
   fi
 }
 
