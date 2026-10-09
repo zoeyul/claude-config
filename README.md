@@ -147,3 +147,5 @@ launchctl print gui/$(id -u)/com.zoeyul.claude-autosync
 
 알림은 사유별로 한 번만 보낸다. 성공하면 해제된다.
 
+
+<!-- 자동 동기화 동작 확인 -->
