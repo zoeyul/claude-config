@@ -77,7 +77,7 @@ Small work (bug fixes, simple changes) proceeds with a Spec alone, without Task 
 ### Triggers
 
 - **"태스크에서 {키워드}"** → search with `/task-find`
-- Transition state with the corresponding command when work starts, completes, or stops. `commands/task-*.md` is canonical for detailed behavior
+- Transition state when work starts, completes, or stops. `skills/task-{new,done,archive}/SKILL.md` is canonical for those transitions; `commands/task-{find,list}.md` for queries
 
 ## CLAUDE.md Maintenance Rules
 

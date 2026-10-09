@@ -1,3 +1,9 @@
+---
+name: task-done
+description: Use when work that is tracked under ~/code/tasks/ is finished - the user says a task is complete, done, or shipped. Converts the task file to the completion template and moves it to done/YYYY-MM/.
+argument-hint: <task-filename>
+---
+
 # task-done
 
 Marks work complete.

@@ -1,3 +1,8 @@
+---
+name: task-new
+description: Use when the user decides to start tracking a new piece of long-running work - a migration, large refactor, or new feature expected to span sessions. Registers it as a Markdown task file under ~/code/tasks/<project>/todo/.
+---
+
 # task-new
 
 Registers new work.

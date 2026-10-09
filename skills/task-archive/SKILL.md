@@ -1,3 +1,9 @@
+---
+name: task-archive
+description: Use when tracked work under ~/code/tasks/ is being stopped, dropped, cancelled, or shelved indefinitely rather than completed. Converts the task file to the archive template, records the reason, and moves it to archive/.
+argument-hint: <task-filename>
+---
+
 # task-archive
 
 Marks work stopped or dropped.
