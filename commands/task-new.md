@@ -1,49 +1,49 @@
 # task-new
 
-새로운 작업을 등록합니다.
+Registers new work.
 
-## 사용법
+## Usage
 
 ```
 /task-new
 ```
 
-## 동작
+## Behavior
 
-1. 사용자에게 질문:
-   - 프로젝트 선택 — `~/code/tasks/` 하위를 스캔해 실제 존재하는 디렉토리를 제시한다
-   - 작업 제목
-   - 우선순위 (high/medium/low)
-   - 간단한 설명
+1. Ask the user:
+   - Project selection — scan under `~/code/tasks/` and present the directories that actually exist
+   - Task title
+   - Priority (high/medium/low)
+   - Brief description
 
-2. Markdown 파일 생성:
-   - 위치: `~/code/tasks/{선택한 프로젝트}/todo/{kebab-case-title}.md`
-   - 템플릿 적용
+2. Create the Markdown file:
+   - Location: `~/code/tasks/{selected project}/todo/{kebab-case-title}.md`
+   - Apply the template
 
-3. 파일 경로 출력
+3. Print the file path
 
-## 템플릿
+## Template
 
 ```markdown
-# {작업 제목}
+# {task title}
 
-**상태**: todo
-**우선순위**: {high/medium/low}
-**등록일**: {YYYY-MM-DD}
+**Status**: todo
+**Priority**: {high/medium/low}
+**Created**: {YYYY-MM-DD}
 
-## 설명
+## Description
 
-{사용자 입력}
+{user input}
 
-## 상세
+## Details
 
-(구체적인 구현 계획 작성)
+(write the concrete implementation plan)
 
-## 테스트
+## Tests
 
-- [ ] 테스트 항목 1
+- [ ] Test item 1
 
-## 진행 상황
+## Progress
 
-- [ ] 시작 전
+- [ ] Not started
 ```

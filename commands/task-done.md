@@ -1,34 +1,34 @@
 # task-done
 
-작업을 완료 처리합니다.
+Marks work complete.
 
-## 사용법
+## Usage
 
 ```
-/task-done <작업파일명>
+/task-done <task-filename>
 ```
 
-## 동작
+## Behavior
 
-1. `in-progress/` 또는 `todo/`에서 작업 파일 찾기
-2. 파일 읽기
-3. 완료 템플릿으로 변환:
-   - **상태**: done
-   - **완료일**: 오늘 날짜
-   - 진행 상황 체크박스 모두 완료 처리
-4. `done/YYYY-MM/` 디렉토리로 이동
-5. 원본 파일 삭제
+1. Find the task file in `in-progress/` or `todo/`
+2. Read the file
+3. Convert to the completion template:
+   - **Status**: done
+   - **Completed**: today's date
+   - Mark every Progress checkbox complete
+4. Move to the `done/YYYY-MM/` directory
+5. Delete the original file
 
-## 예시
+## Example
 
 ```bash
-# in-progress/sdk-migration.md를 완료 처리
+# Mark in-progress/sdk-migration.md complete
 /task-done sdk-migration
 
-# 결과: done/2026-09/sdk-migration.md 생성
+# Result: done/2026-09/sdk-migration.md created
 ```
 
-## 주의
+## Notes
 
-- 파일이 없으면 에러
-- 이미 done/에 있으면 건너뜀
+- Error when the file does not exist
+- Skip when it is already in done/

@@ -1,35 +1,35 @@
 # task-archive
 
-작업을 중단/드롭 처리합니다.
+Marks work stopped or dropped.
 
-## 사용법
+## Usage
 
 ```
-/task-archive <작업파일명>
+/task-archive <task-filename>
 ```
 
-## 동작
+## Behavior
 
-1. `in-progress/` 또는 `todo/`에서 작업 파일 찾기
-2. 파일 읽기
-3. archive 템플릿으로 변환:
-   - **상태**: archived
-   - **중단일**: 오늘 날짜
-   - **중단 사유** 섹션 추가
-4. `archive/` 디렉토리로 이동
-5. 원본 파일 삭제
+1. Find the task file in `in-progress/` or `todo/`
+2. Read the file
+3. Convert to the archive template:
+   - **Status**: archived
+   - **Stopped**: today's date
+   - Add a **Reason stopped** section
+4. Move to the `archive/` directory
+5. Delete the original file
 
-## 예시
+## Example
 
 ```bash
-# in-progress/old-feature.md를 중단 처리
+# Stop in-progress/old-feature.md
 /task-archive old-feature
 
-# 결과: archive/old-feature.md 생성
+# Result: archive/old-feature.md created
 ```
 
-## 사용 시나리오
+## Use Cases
 
-- 요구사항 변경으로 취소
-- 우선순위 밀려서 무기한 보류
-- 다른 방식으로 해결되어 불필요해짐
+- Cancelled due to a requirements change
+- Deprioritized and held indefinitely
+- No longer needed because it was solved another way

@@ -1,27 +1,27 @@
 # task-list
 
-현재 진행 중인 작업 목록을 표시합니다.
+Displays the list of work currently in progress.
 
-## 사용법
+## Usage
 
 ```
 /task-list
 ```
 
-## 동작
+## Behavior
 
-1. 모든 프로젝트의 `in-progress/` 디렉토리 스캔
-2. 각 작업 파일의 메타데이터 읽기:
-   - 제목
-   - 우선순위
-   - 시작일
-   - 진행률 (완료된 체크박스 / 전체 체크박스)
-3. 프로젝트별로 그룹핑하여 표시
+1. Scan the `in-progress/` directory of every project
+2. Read each task file's metadata:
+   - Title
+   - Priority
+   - Start date
+   - Progress (completed checkboxes / total checkboxes)
+3. Display grouped by project
 
-## 옵션
+## Options
 
-- 인자 없음: 모든 프로젝트
-- 프로젝트명 지정: 해당 프로젝트만
+- No argument: all projects
+- Project name given: that project only
   ```
   /task-list <project>
   ```

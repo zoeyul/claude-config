@@ -1,24 +1,24 @@
 ---
-description: ~/code/docs/에 새 문서를 추가합니다
+description: Add a new document to ~/code/docs/
 ---
 
-사용자가 작성하려는 문서의 주제를 물어보고, ~/code/docs/ 디렉토리에 markdown 파일로 작성해주세요.
+Ask the user for the topic of the document they want to write, then write it as a markdown file in the ~/code/docs/ directory.
 
-다음 단계를 따르세요:
+Follow these steps:
 
-1. **주제 확인**: 어떤 내용의 문서를 작성할지 물어봅니다
-2. **파일명 제안**: 주제에 맞는 kebab-case 파일명 제안 (예: `aws-lambda-deployment.md`)
-3. **내용 작성**: 사용자의 설명을 바탕으로 문서 작성
-4. **저장**: `/Users/seoyul/code/docs/{파일명}` 경로에 저장
+1. **Confirm the topic**: ask what the document should cover
+2. **Propose a filename**: suggest a kebab-case filename matching the topic (e.g. `aws-lambda-deployment.md`)
+3. **Write the content**: write the document based on the user's explanation
+4. **Save**: save to the path `/Users/seoyul/code/docs/{filename}`
 
-문서 형식:
-- 제목: `# {주제}`
-- 섹션 구조화
-- 코드 예시 포함 (있다면)
-- 실제 사례 포함 (있다면)
-- 참고 자료 링크
+Document format:
+- Title: `# {topic}`
+- Structured sections
+- Code examples included (when applicable)
+- Real cases included (when applicable)
+- Reference links
 
-기존 문서 스타일 참고:
+Check existing document style:
 ```bash
 ls ~/code/docs/
 ```

@@ -1,314 +1,314 @@
 ---
 name: spec-driven
-description: Kiro 방식 Spec-Driven Development 워크플로우 (start/verify/update/status)
+description: Kiro-style Spec-Driven Development workflow (start/verify/update/status)
 ---
 
 # Spec-Driven Development
 
-이 skill은 Kiro 방식의 Spec-Driven Development를 지원합니다.
+This skill supports Kiro-style Spec-Driven Development.
 
-## 사용법
+## Usage
 
-- `/spec-driven start` - 새 Spec 생성
-- `/spec-driven verify` - 현재 작업 검증
-- `/spec-driven update` - Spec 업데이트
-- `/spec-driven status` - 진행 상황 확인
+- `/spec-driven start` - create a new Spec
+- `/spec-driven verify` - verify current work
+- `/spec-driven update` - update the Spec
+- `/spec-driven status` - check progress
 
-인자 없이 `/spec-driven` 호출 시 사용법 출력.
+Calling `/spec-driven` with no argument prints usage.
 
 ---
 
-## start - 새 Spec 생성
+## start - create a new Spec
 
-### 입력 받기
-1. **작업 이름** (kebab-case 권장)
-2. **작업 설명** (무엇을, 왜)
-3. **저장 위치** (글로벌: `~/.claude/plans/`, 프로젝트: `.claude/specs/`)
+### Collect input
+1. **Task name** (kebab-case recommended)
+2. **Task description** (what, why)
+3. **Save location** (global: `~/.claude/plans/`, project: `.claude/specs/`)
 
-### Spec 파일 구조
+### Spec file structure
 
 ```markdown
-# <작업 이름>
+# <task name>
 
 ## Requirements
 
 ### User Story
-<역할>로서, <목표>를 달성하고 싶다. <이유>.
+As a <role>, I want to achieve <goal>. <reason>.
 
 ---
 
-### Requirement 1: <제목>
+### Requirement 1: <title>
 
 #### Acceptance Criteria
 
-1. WHEN [조건] THEN THE SYSTEM SHALL [동작]
-2. WHERE [컨텍스트] THE SYSTEM SHALL [동작]
-3. IF [조건] THEN THE SYSTEM SHALL [동작]
+1. WHEN [condition] THEN THE SYSTEM SHALL [behavior]
+2. WHERE [context] THE SYSTEM SHALL [behavior]
+3. IF [condition] THEN THE SYSTEM SHALL [behavior]
 
 #### Additional Details
 - **Priority**: High/Medium/Low
 - **Complexity**: High/Medium/Low
-- **Dependencies**: <의존성>
-- **Assumptions**: <가정>
+- **Dependencies**: <dependencies>
+- **Assumptions**: <assumptions>
 
 ---
 
 ## Design
 
-### 현재 상태 분석
-<문제점, 기존 구조>
+### Current state analysis
+<problems, existing structure>
 
-### 기술적 접근
-<선택한 방식과 이유>
+### Technical approach
+<chosen approach and reason>
 
 ### Critical Files
-- **수정 대상**: `<경로>` - <내용>
-- **생성 대상**: `<경로>` - <내용>
-- **삭제 대상**: `<경로>` - <이유>
-- **검증 대상**: `<경로>` - <방법>
+- **To modify**: `<path>` - <content>
+- **To create**: `<path>` - <content>
+- **To delete**: `<path>` - <reason>
+- **To verify**: `<path>` - <method>
 
 ---
 
 ## Tasks
 
-### Task 1: <제목>
+### Task 1: <title>
 **Status**: TODO  
 **Dependencies**: None  
 **Requirement**: Requirement 1 (AC1, AC2)
 
 #### Subtasks
-- [ ] <작업 1>
-- [ ] <작업 2>
+- [ ] <item 1>
+- [ ] <item 2>
 
 ---
 
-### Task 2: <제목>
+### Task 2: <title>
 ...
 
 ---
 
 ## Progress Tracking
 
-- **Total Tasks**: <숫자>
+- **Total Tasks**: <number>
 - **Completed**: 0
 - **In Progress**: 0
-- **TODO**: <숫자>
+- **TODO**: <number>
 
 ### Critical Path
-1. Task X - <핵심 경로>
+1. Task X - <critical path>
 ```
 
-### EARS 형식 예시
+### EARS format examples
 
-**WHEN** - 이벤트 발생 시:
+**WHEN** - on event occurrence:
 ```
-WHEN 사용자가 로그인 버튼을 클릭할 때 THEN THE SYSTEM SHALL 인증 API를 호출해야 함
-```
-
-**WHERE** - 컨텍스트:
-```
-WHERE 설정 파일이 credential을 포함할 때 THE SYSTEM SHALL 환경변수로 분리해야 함
+WHEN the user clicks the login button THEN THE SYSTEM SHALL call the authentication API
 ```
 
-**IF** - 조건:
+**WHERE** - context:
 ```
-IF 환경변수가 설정되지 않았을 때 THEN THE SYSTEM SHALL 오류 메시지를 출력해야 함
-```
-
-**WHILE** - 진행 중:
-```
-WHILE 데이터 동기화가 진행 중일 때 THE SYSTEM SHALL 진행률을 표시해야 함
+WHERE the configuration file contains a credential THE SYSTEM SHALL separate it into an environment variable
 ```
 
-### 실행 후
-- Spec 파일 저장
-- 요약 출력
-- 다음 단계 안내 (Design → Tasks → 실행)
+**IF** - condition:
+```
+IF the environment variable is not set THEN THE SYSTEM SHALL print an error message
+```
+
+**WHILE** - in progress:
+```
+WHILE data synchronization is in progress THE SYSTEM SHALL display the progress rate
+```
+
+### After execution
+- Save the Spec file
+- Print a summary
+- Guide the next step (Design → Tasks → execution)
 
 ---
 
-## verify - Spec 검증
+## verify - verify the Spec
 
-### 1. Spec 로드
-- `~/.claude/plans/` 또는 `.claude/specs/`에서 최신 Spec 찾기
-- 사용자가 파일 지정하면 그것 사용
+### 1. Load the Spec
+- Find the latest Spec in `~/.claude/plans/` or `.claude/specs/`
+- When the user names a file, use that one
 
-### 2. Requirements 검증
+### 2. Verify Requirements
 
-각 Acceptance Criteria에 대해:
-- **충족 여부** 확인 (✅/❌/⏳)
-- **근거** 제시 (파일, 명령 결과)
-- **관련 파일** 명시
+For each Acceptance Criterion:
+- Check **whether it is satisfied** (✅/❌/⏳)
+- Present the **evidence** (file, command result)
+- State the **related files**
 
-**예시:**
+**Example:**
 ```
-AC1: WHEN credential을 제외한 설정 파일이 Git 레포에 있을 때...
+AC1: WHEN configuration files excluding credentials are in the Git repo...
 
-검증:
-✅ 충족
-- git ls-files로 확인: CLAUDE.md, commands/, .claude.json 존재
-- .gitignore 확인: credential 파일 제외됨
+Verification:
+✅ Satisfied
+- Confirmed with git ls-files: CLAUDE.md, commands/, .claude.json exist
+- Confirmed .gitignore: credential files excluded
 ```
 
-### 3. Critical Files 검증
+### 3. Verify Critical Files
 
 ```bash
-# 수정 대상 확인
+# Check what was modified
 git status | grep modified
 git diff --name-only
 
-# 생성 대상 확인
-ls <파일>
+# Check what was created
+ls <file>
 
-# 예상 외 변경 감지
+# Detect unexpected changes
 git status --short
 ```
 
-**보고:**
-- ✅ 수정됨: `<파일>` - <내용>
-- ❌ 미수정: `<파일>` - 아직 작업 안 됨
-- ⚠️ 예상 외: `<파일>` - Spec에 없음
+**Report:**
+- ✅ Modified: `<file>` - <content>
+- ❌ Not modified: `<file>` - not done yet
+- ⚠️ Unexpected: `<file>` - not in the Spec
 
-### 4. Tasks 진행 상황
+### 4. Tasks progress
 
 ```
-완료 (2/5):
+Completed (2/5):
 - ✅ Task 1: ...
 - ✅ Task 2: ...
 
-진행 중 (1/5):
+In progress (1/5):
 - ⏳ Task 3: ...
 
-미완료 (2/5):
+Incomplete (2/5):
 - ❌ Task 4: ...
 - ❌ Task 5: ...
 ```
 
-### 5. 위반 사항 요약
+### 5. Violation summary
 
 ```
-🚨 Spec 위반
+🚨 Spec violations
 
 Critical:
-- ❌ AC3 미충족: setup.sh에 skills 링크 없음
-- ❌ 누락된 파일: settings.json
+- ❌ AC3 not satisfied: no skills link in setup.sh
+- ❌ Missing file: settings.json
 
 Warning:
-- ⚠️ 예상 외 변경: test.md
+- ⚠️ Unexpected change: test.md
 
-권장 사항:
-1. setup.sh 수정
-2. settings.json 추가
-3. test.md를 Spec에 추가하거나 삭제
+Recommendations:
+1. Modify setup.sh
+2. Add settings.json
+3. Add test.md to the Spec or delete it
 ```
 
 ---
 
-## update - Spec 업데이트
+## update - update the Spec
 
-### 1. 변경 사항 확인
-- 무엇이 바뀌었는지
-- 왜 바뀌었는지
+### 1. Confirm the changes
+- What changed
+- Why it changed
 
-### 2. Requirements 업데이트
-- 새 AC 추가
-- 기존 AC 수정
-- 불필요한 AC 삭제
+### 2. Update Requirements
+- Add new ACs
+- Modify existing ACs
+- Delete unnecessary ACs
 
-### 3. Design 영향도 분석
-- Critical Files 업데이트
-- 기술적 접근 방식 수정
+### 3. Analyze Design impact
+- Update Critical Files
+- Revise the technical approach
 
-### 4. Tasks 동기화
+### 4. Synchronize Tasks
 
-**새 AC 추가** → 새 Task 생성:
+**New AC added** → create a new Task:
 ```markdown
-### Task N: <새 AC 구현>
+### Task N: <implement the new AC>
 **Requirement**: Requirement X (ACN)
 ```
 
-**AC 삭제** → 해당 Task 제거
+**AC deleted** → remove the corresponding Task
 
-**AC 수정** → Task Subtasks 업데이트
+**AC modified** → update the Task Subtasks
 
-### 5. Git 커밋
+### 5. Git commit
 ```bash
 git add <spec-file>
-git commit -m "spec: <변경 내용>"
+git commit -m "spec: <change>"
 ```
 
 ---
 
-## status - 진행 상황
+## status - progress
 
-### 1. Requirements 상태
-
-```
-Requirement 1: 설정 파일 공유
-├─ AC1: ✅ 충족
-├─ AC2: ✅ 충족
-├─ AC3: ⏳ 진행 중
-└─ AC4: ❌ 미충족
-
-Requirement 2: 심볼릭 링크
-├─ AC1: ✅ 충족
-└─ AC2: ❌ 미충족
-```
-
-### 2. Critical Files 상태
+### 1. Requirements status
 
 ```
-수정 대상 (2/3):
+Requirement 1: configuration file sharing
+├─ AC1: ✅ Satisfied
+├─ AC2: ✅ Satisfied
+├─ AC3: ⏳ In progress
+└─ AC4: ❌ Not satisfied
+
+Requirement 2: symbolic links
+├─ AC1: ✅ Satisfied
+└─ AC2: ❌ Not satisfied
+```
+
+### 2. Critical Files status
+
+```
+To modify (2/3):
 ✅ ~/.claude/CLAUDE.md
 ✅ ~/code/claude-config/setup.sh
 ❌ ~/code/claude-config/README.md
 
-생성 대상 (1/2):
+To create (1/2):
 ✅ ~/.claude/skills/spec-driven.md
 ❌ ~/code/claude-config/settings.json
 ```
 
-### 3. Tasks 진행률
+### 3. Tasks progress rate
 
 ```
-전체: 10개
-완료: 3개 (30%)
-진행 중: 2개 (20%)
-미완료: 5개 (50%)
+Total: 10
+Completed: 3 (30%)
+In progress: 2 (20%)
+Incomplete: 5 (50%)
 
-현재 작업: Task 4 - setup.sh 업데이트
-다음 작업: Task 5 - README.md 재작성
+Current task: Task 4 - update setup.sh
+Next task: Task 5 - rewrite README.md
 ```
 
-### 4. 예상 완료 시점
+### 4. Estimated completion
 
 ```
 Critical Path:
-Task 1 (완료) → Task 3 (진행 중) → Task 5 (대기) → Task 8 (대기)
+Task 1 (done) → Task 3 (in progress) → Task 5 (waiting) → Task 8 (waiting)
 
-예상 남은 작업: 5개
-현재 속도: 1 task/10분
-예상 완료: ~50분 후
+Estimated remaining: 5
+Current rate: 1 task/10min
+Estimated completion: ~50min
 ```
 
 ---
 
-## 주의사항
+## Cautions
 
-### EARS 형식 필수
-- "SHALL" 키워드 반드시 포함
-- 조건부(WHEN/WHERE/IF/WHILE) 명시
-- 측정 가능한 기준
+### EARS format required
+- Always include the "SHALL" keyword
+- State the conditional (WHEN/WHERE/IF/WHILE)
+- Measurable criteria
 
-### 추적성 유지
-- Tasks는 Requirement AC와 연결
-- Requirement 번호 + AC 번호 명시
+### Maintain traceability
+- Link Tasks to Requirement ACs
+- State the Requirement number + AC number
 
-### 근거 명시
-- "충족" 또는 "미충족"만이 아니라
-- **어떤 파일/명령으로 확인했는지** 명시
+### State the evidence
+- Not just "satisfied" or "not satisfied"
+- State **which file or command confirmed it**
 
-### 예상 외 변경 주의
-- Spec에 없는 변경은 경고
-- 의도적이면 Spec 업데이트 권장
-- 자동 생성 파일(node_modules 등) 무시
+### Watch for unexpected changes
+- Warn on changes not in the Spec
+- When intentional, recommend updating the Spec
+- Ignore auto-generated files (node_modules and the like)

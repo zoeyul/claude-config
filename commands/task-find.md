@@ -1,35 +1,34 @@
 # task-find
 
-키워드로 작업 파일을 검색합니다.
+Searches task files by keyword.
 
-## 사용법
+## Usage
 
 ```
-/task-find <키워드>
+/task-find <keyword>
 ```
 
-## 동작
+## Behavior
 
-1. `~/code/tasks` 전체에서 키워드로 검색:
-   - 파일명 검색: `find ~/code/tasks -name "*{키워드}*.md"`
-   - 내용 검색: `find ~/code/tasks -name "*.md" | xargs grep -l "{키워드}"`
+1. Search all of `~/code/tasks` by keyword:
+   - Filename search: `find ~/code/tasks -name "*{keyword}*.md"`
+   - Content search: `find ~/code/tasks -name "*.md" | xargs grep -l "{keyword}"`
 
-2. 찾은 파일 목록 표시:
-   - 상태 (todo/in-progress/done/archive)
-   - 프로젝트
-   - 파일 경로
+2. Display the list of files found:
+   - Status (todo/in-progress/done/archive)
+   - Project
+   - File path
 
-3. 관련성 높은 파일들 Read
+3. Read the most relevant files
 
-4. 내용 요약 제공
+4. Provide a content summary
 
-## 예시
+## Example
 
 ```bash
-# SDK 관련 작업 찾기
+# Find SDK-related work
 /task-find sdk
 
-# 마이그레이션 관련 작업 찾기
+# Find migration-related work
 /task-find migration
 ```
-
