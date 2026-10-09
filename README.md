@@ -19,6 +19,8 @@
 | `mcp.json` | MCP 서버 정의 |
 | `settings.shared.json` | 플러그인·effortLevel·theme |
 | `bootstrap.sh` | 위 두 JSON 을 런타임 파일에 반영 |
+| `bin/` | 자동 동기화 스크립트 |
+| `com.zoeyul.claude-autosync.plist` | 자동 동기화 launchd 에이전트 템플릿 |
 
 ### 제외 대상
 
@@ -69,6 +71,8 @@ git checkout -f -b main origin/main
 |---|---|
 | `jq` | `bootstrap.sh` 가 사용한다. `brew install jq` |
 
+자동 동기화에 추가 의존성은 없다. 파일 와처를 쓰지 않으므로 `fswatch` 가 필요하지 않다.
+
 ### 5. Claude Code 재시작
 
 ## 다른 머신 동기화
@@ -76,4 +80,70 @@ git checkout -f -b main origin/main
 ```bash
 cd ~/.claude && git pull && ./bootstrap.sh
 ```
+
+## 자동 동기화
+
+추적 대상 파일이 바뀌면 자동으로 커밋·푸시한다. 편집 주체(Claude Code, 에디터, `git pull`)와
+무관하게 동작한다.
+
+```bash
+./bootstrap.sh --with-autosync          # 설치
+./bin/install-autosync.sh --uninstall   # 제거
+```
+
+기본값으로는 설치되지 않는다. 설정만 필요한 머신에서 데몬이 돌지 않게 하기 위해서다.
+
+### 동작
+
+launchd 가 120초마다 `bin/auto-sync.sh` 를 실행한다. 상주 프로세스가 없다 —
+깨어나서 `git status` 를 묻고(약 8ms) 종료한다.
+
+| 단계 | 내용 |
+|---|---|
+| 선검사 | rebase·merge·cherry-pick 진행 중이거나 `main` 이 아니면 아무것도 하지 않는다 |
+| 변경 판정 | `.gitignore` 화이트리스트를 통과한 변경만 대상이다. 런타임 데이터는 보이지 않는다 |
+| 디바운스 | 마지막 변경 후 90초간 조용할 때까지 기다린다. 연속 편집이 커밋 하나로 합쳐지고, 에디터의 부분 쓰기가 배제된다 |
+| 게이트 | 경로 허용목록 + 자격증명 파일명·내용 패턴. 통과 못 하면 **스테이징조차 하지 않고** 중단하고 알린다 |
+| 커밋 | 네트워크보다 먼저. 오프라인에서도 작업이 보존된다 |
+| 푸시 | fast-forward 만. 원격이 앞서 있으면 멈추고 알린다 |
+
+### 하지 않는 것
+
+`rebase`, `merge`, `pull`, `stash`, `reset`, `clean`, force-push 를 쓰지 않는다
+(`--force-with-lease` 조차 쓰지 않는다). 쓰기 작업은 `add`·`commit`·`push`(force 없음) 세 개뿐이다.
+force 없는 push 는 서버측 fast-forward 검사가 다른 머신의 작업을 덮어쓰는 것을 불가능하게 만든다.
+
+분기 해소는 유저 판단으로 남긴다. `CLAUDE.md` 의 Git Safety Rules 를 따른다.
+
+### 원격이 앞서 있을 때
+
+알림이 오면 로컬 커밋은 이미 되어 있고 push 만 보류된 상태다. 직접 통합한다.
+
+```bash
+cd ~/.claude
+git log --oneline origin/main..HEAD    # 로컬에만 있는 커밋
+git log --oneline HEAD..origin/main    # 원격에만 있는 커밋
+```
+
+통합 방법(merge 또는 rebase)을 판단해 실행한 뒤 push 한다.
+
+### 진단
+
+```bash
+tail -f ~/.claude/.git/auto-sync.log
+launchctl print gui/$(id -u)/com.zoeyul.claude-autosync
+```
+
+| 로그 | 뜻 |
+|---|---|
+| `DEBOUNCE` | 변경이 진행 중. 조용해지면 커밋한다 |
+| `SKIP` | git 작업 진행 중이거나 `main` 이 아니다 |
+| `BLOCK` | 게이트가 막았다. 해당 파일을 확인한다 |
+| `DIVERGED` | 원격이 앞서 있다. 위 절차로 통합한다 |
+| `COMMIT` / `PUSH ok` | 정상 |
+
+상태 파일은 `.git/` 안에 둔다 (`auto-sync.log`, `.lock`, `.state`, `.notified.*`).
+`.gitignore` 매칭 대상이 아니므로 데몬이 자기 자신을 트리거하지 않는다.
+
+알림은 사유별로 한 번만 보낸다. 성공하면 해제된다.
 

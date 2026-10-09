@@ -13,7 +13,9 @@
 !mcp.json
 !settings.shared.json
 !keybindings.json
+!com.zoeyul.claude-autosync.plist
 
+!bin/**
 !commands/**
 !skills/**
 !agents/**

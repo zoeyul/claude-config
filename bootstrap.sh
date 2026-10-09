@@ -62,5 +62,15 @@ report_unset_vars() {
 }
 
 report_unset_vars
+
+# 자동 동기화는 원격에 push 하는 백그라운드 데몬이다.
+# 설정 주입과 범주가 다르므로 명시적으로 요청할 때만 설치한다.
+if [ "${1:-}" = "--with-autosync" ]; then
+  "$CLAUDE_DIR/bin/install-autosync.sh"
+else
+  echo ""
+  echo "자동 동기화 미설치. 설치: ./bootstrap.sh --with-autosync"
+fi
+
 echo ""
 echo "완료. Claude Code 를 재시작하세요."
