@@ -81,6 +81,12 @@ if [ "$branch" != "main" ]; then
   exit 0
 fi
 
+# 플러그인 드리프트를 먼저 해소한다. 공유 파일이 바뀌면 아래 변경 판정이 집어간다.
+# 실패해도 본 동기화는 계속한다 — 부가 기능이 설정 커밋을 막아서는 안 된다.
+if [ -x "$REPO/bin/sync-plugins.sh" ]; then
+  "$REPO/bin/sync-plugins.sh" >>"$LOG" 2>&1 || log "WARN: 플러그인 동기화 실패"
+fi
+
 # 커밋 대상 경로. .gitignore 가 런타임 데이터를 이미 걸러낸다.
 # 스크립트는 그 필터를 재구현하지 않고 신뢰한다.
 changed_paths() {

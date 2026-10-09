@@ -1,12 +1,19 @@
 {
   "enabledPlugins": {
-    "claude-md-management@claude-plugins-official": true
+    "claude-md-management@claude-plugins-official": true,
+    "attention-span@attention-span": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
       "source": {
         "source": "github",
         "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "attention-span": {
+      "source": {
+        "source": "github",
+        "repo": "alexgreensh/attention-span"
       }
     }
   },

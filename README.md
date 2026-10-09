@@ -17,16 +17,16 @@
 | `hooks/` | 직접 작성한 훅만 |
 | `keybindings.json` | 키 바인딩 |
 | `mcp.json` | MCP 서버 정의 |
-| `settings.shared.json` | 플러그인·effortLevel·theme |
+| `settings.shared.json` | 플러그인 목록·마켓플레이스·effortLevel·theme |
 | `bootstrap.sh` | 위 두 JSON 을 런타임 파일에 반영 |
-| `bin/` | 자동 동기화 스크립트 |
+| `bin/` | 자동 동기화·플러그인 동기화 스크립트 |
 | `com.zoeyul.claude-autosync.plist` | 자동 동기화 launchd 에이전트 템플릿 |
 
 ### 제외 대상
 
 - 런타임 데이터: `projects/`, `history.jsonl`, `file-history/`, `sessions/`, `cache/`, `shell-snapshots/` 등
 - `settings.json`, `settings.local.json` — Claude Code 와 외부 도구가 상시 갱신한다
-- `plugins/` — 마켓플레이스에서 재설치된다
+- `plugins/` — 플러그인 **코드** 자체 (47MB). 마켓플레이스에서 재설치된다
 - 자격증명 (`*.key`, `*.pem`, `.credentials.json` 등)
 
 ### 공유하지 않는 것과 이유
@@ -140,6 +140,52 @@ git log --oneline HEAD..origin/main    # 원격에만 있는 커밋
 ```
 
 통합 방법(merge 또는 rebase)을 판단해 실행한 뒤 push 한다.
+
+### 플러그인 공유
+
+플러그인을 설치하면 **공유 목록에 자동 반영되어 push 된다.** 기억할 것이 없다.
+
+공유되는 것은 **목록이고 코드가 아니다.**
+
+| | 내용 | 추적 |
+|---|---|---|
+| `settings.shared.json` | 어떤 플러그인을 쓰고 출처가 어디인지 | O |
+| `plugins/` | 내려받은 플러그인 코드 (47MB) | X |
+
+새 머신에서 `bootstrap.sh` 를 실행하면 목록이 `settings.json` 에 병합되고,
+Claude Code 가 그 목록을 읽어 플러그인을 직접 내려받는다. 수동 설치가 필요 없다.
+`package.json` 과 `node_modules/` 의 관계와 같다.
+
+#### 공개 마켓플레이스만 자동 추가한다
+
+**이 레포는 public 이다.** 구분 없이 자동 추가하면 사내 마켓플레이스 이름과
+source URL 이 공개된다. 데몬의 시크릿 게이트는 이를 잡지 못한다 —
+마켓플레이스 이름은 자격증명 패턴이 아니다.
+
+`bin/sync-plugins.sh` 가 각 마켓플레이스의 GitHub 레포를 **미인증**으로 조회한다.
+
+| 응답 | 판정 |
+|---|---|
+| 200 | 공개 → 자동 추가 |
+| 404 | 비공개 또는 없음 → 추가하지 않음 (영구 캐시) |
+| 그 외 (000·5xx·429) | 확인 실패 → 추가하지 않고 **다음 실행에서 재시도** (캐시하지 않음) |
+
+미인증으로 조회하는 이유: `gh` 로 인증하면 유저가 접근 가능한 비공개 레포도 200 이 되어
+판정이 무의미해진다. 미인증 200 은 "누구나 볼 수 있다" 와 같다.
+
+일시적 장애를 영구 판정으로 굳히지 않도록 **404 만 캐시한다.**
+공개 레포가 한 번의 네트워크 오류로 영구히 동기화되지 않는 것을 막는다.
+
+사내 플러그인을 공유하려면 `settings.shared.json` 을 직접 편집한다.
+
+#### 진단
+
+```bash
+grep sync-plugins ~/.claude/.git/auto-sync.log
+cat ~/.claude/.git/plugin-visibility.cache
+```
+
+판정 캐시를 지우면 다음 실행에서 다시 조회한다.
 
 ### 조정 가능한 값
 
