@@ -75,11 +75,21 @@ git checkout -f -b main origin/main
 
 ### 5. Claude Code 재시작
 
+### 6. 자동 동기화 (선택)
+
+```bash
+~/.claude/bootstrap.sh --with-autosync
+```
+
+이 머신에서도 변경을 자동으로 커밋·푸시하려면 설치한다. 아래 `자동 동기화` 절 참고.
+
 ## 다른 머신 동기화
 
 ```bash
 cd ~/.claude && git pull && ./bootstrap.sh
 ```
+
+자동 동기화가 설치된 머신에서는 로컬 변경이 이미 push 되어 있다. `git pull` 만으로 충분하다.
 
 ## 자동 동기화
 
@@ -93,6 +103,10 @@ cd ~/.claude && git pull && ./bootstrap.sh
 
 기본값으로는 설치되지 않는다. 설정만 필요한 머신에서 데몬이 돌지 않게 하기 위해서다.
 
+설치 시 `BatchMode` 로 `git ls-remote` 를 먼저 시도한다. 비대화식 SSH 접근이 안 되면
+설치하지 않는다 — 조용히 실패만 하는 데몬을 세우지 않기 위해서다.
+재실행해도 결과가 같다.
+
 ### 동작
 
 launchd 가 120초마다 `bin/auto-sync.sh` 를 실행한다. 상주 프로세스가 없다 —
@@ -100,12 +114,12 @@ launchd 가 120초마다 `bin/auto-sync.sh` 를 실행한다. 상주 프로세�
 
 | 단계 | 내용 |
 |---|---|
-| 선검사 | rebase·merge·cherry-pick 진행 중이거나 `main` 이 아니면 아무것도 하지 않는다 |
+| 선검사 | `.git/` 에 진행 중 작업 마커(`rebase-merge`, `rebase-apply`, `MERGE_HEAD`, `CHERRY_PICK_HEAD`, `REVERT_HEAD`, `BISECT_LOG`, `index.lock`)가 있거나 브랜치가 `main` 이 아니면 아무것도 하지 않는다 |
 | 변경 판정 | `.gitignore` 화이트리스트를 통과한 변경만 대상이다. 런타임 데이터는 보이지 않는다 |
 | 디바운스 | 마지막 변경 후 90초간 조용할 때까지 기다린다. 연속 편집이 커밋 하나로 합쳐지고, 에디터의 부분 쓰기가 배제된다 |
-| 게이트 | 경로 허용목록 + 자격증명 파일명·내용 패턴. 통과 못 하면 **스테이징조차 하지 않고** 중단하고 알린다 |
+| 게이트 | 경로 허용목록 + 자격증명 파일명·내용 패턴 + 바이너리·256KB 초과 차단. 통과 못 하면 **스테이징조차 하지 않고** 중단하고 알린다 |
 | 커밋 | 네트워크보다 먼저. 오프라인에서도 작업이 보존된다 |
-| 푸시 | fast-forward 만. 원격이 앞서 있으면 멈추고 알린다 |
+| 푸시 | fast-forward 만. 원격이 앞서 있으면 멈추고 알린다. 분기 감지용 `fetch` 는 15분 간격으로만 한다 |
 
 ### 하지 않는 것
 
@@ -127,6 +141,24 @@ git log --oneline HEAD..origin/main    # 원격에만 있는 커밋
 
 통합 방법(merge 또는 rebase)을 판단해 실행한 뒤 push 한다.
 
+### 조정 가능한 값
+
+| 값 | 기본 | 위치 |
+|---|---|---|
+| 실행 간격 | 120초 | `com.zoeyul.claude-autosync.plist` 의 `StartInterval` |
+| 디바운스 | 90초 | `bin/auto-sync.sh` 의 `QUIET_SECONDS` |
+| `fetch` 주기 | 900초 | `bin/auto-sync.sh` 의 `FETCH_INTERVAL` |
+| 로그 로테이션 | 1MB | `bin/auto-sync.sh` 의 `MAX_LOG_BYTES` |
+
+마지막 편집부터 push 까지 최악 약 3.5분. 간격과 디바운스를 60/60 으로 낮추면 약 2분이다.
+`StartInterval` 을 60초 미만으로 두는 것은 의미가 없다 (launchd 가 스폰 속도에 하한을 둔다).
+
+`QUIET_SECONDS` 와 `FETCH_INTERVAL` 은 환경변수로도 덮어쓸 수 있다. 수동 실행에 쓴다.
+
+```bash
+QUIET_SECONDS=0 ~/.claude/bin/auto-sync.sh    # 디바운스 없이 즉시 실행
+```
+
 ### 진단
 
 ```bash
@@ -142,10 +174,10 @@ launchctl print gui/$(id -u)/com.zoeyul.claude-autosync
 | `DIVERGED` | 원격이 앞서 있다. 위 절차로 통합한다 |
 | `COMMIT` / `PUSH ok` | 정상 |
 
-상태 파일은 `.git/` 안에 둔다 (`auto-sync.log`, `.lock`, `.state`, `.notified.*`).
+스크립트 자체가 죽는 경우(문법 오류 등)는 `auto-sync.log` 에 남지 않는다.
+`.git/auto-sync.launchd.log` 를 본다 — launchd 가 받은 stderr 다. 정상이면 비어 있다.
+
+상태 파일은 `.git/` 안에 둔다 (`auto-sync.log`, `.launchd.log`, `.lock`, `.state`, `.notified.*`).
 `.gitignore` 매칭 대상이 아니므로 데몬이 자기 자신을 트리거하지 않는다.
 
 알림은 사유별로 한 번만 보낸다. 성공하면 해제된다.
-
-
-<!-- 자동 동기화 동작 확인 -->
