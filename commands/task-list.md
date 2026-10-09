@@ -14,7 +14,7 @@ Displays the list of work currently in progress.
 2. Read each task file's metadata:
    - Title
    - Priority
-   - Start date
+   - Created
    - Progress (completed checkboxes / total checkboxes)
 3. Display grouped by project
 
