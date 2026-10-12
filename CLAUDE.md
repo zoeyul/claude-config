@@ -22,6 +22,16 @@
 - ⛔ **Never offload judgment to the user.** Decide rules, scope, order, and structure yourself on the basis of data and present them; the user corrects only what is wrong. List options for the user to choose only when safety is at stake.
 - ⛔ **Never overwrite planning documents.** Unless the content is wrong, append with a date rather than revising. The record of why an earlier judgment changed must survive, so the same investigation is not repeated.
 
+## English Practice
+
+The user is practicing English through prompts.
+
+- When a prompt is written in English, start the response with a corrected version of it, then handle the request as usual.
+- Format: the natural rewrite as a `>` quote, then at most 3 bullets on the key mistakes (grammar, word choice, unnatural phrasing). If the prompt is already natural, write "No corrections."
+- Correct only the user's own writing. Never correct code, commands, file paths, or pasted content.
+- Keep the correction short. It must never replace or delay the actual answer.
+- Prompts written in Korean get no correction.
+
 ## Code Style & Terminology
 
 Scope: documents, comments, commit messages, PR bodies.
