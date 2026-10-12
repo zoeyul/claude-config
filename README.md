@@ -1,47 +1,47 @@
-# Claude 설정 관리
+# Claude Configuration Management
 
-여러 컴퓨터 간 Claude Code 전역 설정을 공유하는 레포. 이 레포의 작업 트리가 곧 `~/.claude` 다.
+A repository that shares global Claude Code configuration across multiple machines. The work tree of this repository is `~/.claude` itself.
 
-## 구조
+## Structure
 
-`~/.claude` 에는 설정과 런타임 데이터가 섞여 있다. `.gitignore` 는 **전부 제외한 뒤 추적 대상만 화이트리스트**한다. 새 런타임 디렉토리가 생겨도 자동으로 걸러진다.
+`~/.claude` mixes configuration with runtime data. `.gitignore` **excludes everything, then whitelists only the tracked paths.** New runtime directories are filtered out automatically.
 
-### 추적 대상
+### Tracked
 
-| 경로 | 내용 |
+| Path | Contents |
 |---|---|
-| `CLAUDE.md` | 전역 규칙 |
-| `commands/` | 커스텀 커맨드 |
-| `skills/` | 커스텀 스킬 |
-| `agents/`, `rules/`, `output-styles/`, `themes/` | 있으면 추적 |
-| `hooks/` | 직접 작성한 훅만 |
-| `keybindings.json` | 키 바인딩 |
-| `mcp.json` | MCP 서버 정의 |
-| `settings.shared.json` | 플러그인 목록·마켓플레이스·effortLevel·theme |
-| `bootstrap.sh` | 위 두 JSON 을 런타임 파일에 반영 |
-| `bin/` | 자동 동기화·플러그인 동기화 스크립트 |
-| `com.zoeyul.claude-autosync.plist` | 자동 동기화 launchd 에이전트 템플릿 |
+| `CLAUDE.md` | Global rules |
+| `commands/` | Custom commands |
+| `skills/` | Custom skills |
+| `agents/`, `rules/`, `output-styles/`, `themes/` | Tracked if present |
+| `hooks/` | Hand-written hooks only |
+| `keybindings.json` | Key bindings |
+| `mcp.json` | MCP server definitions |
+| `settings.shared.json` | Plugin list, marketplaces, effortLevel, theme |
+| `bootstrap.sh` | Applies the two JSON files above to the runtime files |
+| `bin/` | Auto-sync and plugin sync scripts |
+| `com.zoeyul.claude-autosync.plist` | launchd agent template for auto-sync |
 
-### 제외 대상
+### Excluded
 
-- 런타임 데이터: `projects/`, `history.jsonl`, `file-history/`, `sessions/`, `cache/`, `shell-snapshots/` 등
-- `settings.json`, `settings.local.json` — Claude Code 와 외부 도구가 상시 갱신한다
-- `plugins/` — 플러그인 **코드** 자체 (47MB). 마켓플레이스에서 재설치된다
-- 자격증명 (`*.key`, `*.pem`, `.credentials.json` 등)
+- Runtime data: `projects/`, `history.jsonl`, `file-history/`, `sessions/`, `cache/`, `shell-snapshots/`, etc.
+- `settings.json`, `settings.local.json` — continuously updated by Claude Code and external tools
+- `plugins/` — the plugin **code** itself (47MB). Reinstalled from marketplaces
+- Credentials (`*.key`, `*.pem`, `.credentials.json`, etc.)
 
-### 공유하지 않는 것과 이유
+### What is not shared, and why
 
-| 항목 | 이유 |
+| Item | Reason |
 |---|---|
-| `permissions` | 승인은 신뢰 결정이다. 공유하면 다른 머신이 승인한 적 없는 명령을 자동 허용한다. Claude Code 는 기본적으로 승인을 각 프로젝트의 `.claude/settings.local.json` 에 저장한다 |
-| `hooks`, `statusLine` | 이 값을 쓰는 외부 도구가 머신마다 스스로 설치한다 |
-| `oauthAccount`, `userID`, `machineID`, `projects` | 계정·머신 고유 상태 |
+| `permissions` | An approval is a trust decision. Sharing it would auto-allow commands another machine never approved. By default, Claude Code stores approvals in each project's `.claude/settings.local.json` |
+| `hooks`, `statusLine` | The external tools that use these values install them on each machine themselves |
+| `oauthAccount`, `userID`, `machineID`, `projects` | Account- and machine-specific state |
 
-## 새 머신 셋업
+## New Machine Setup
 
-### 1. 레포를 `~/.claude` 에 붙인다
+### 1. Attach the repository to `~/.claude`
 
-`~/.claude` 를 삭제하지 않고 그 자리에 작업 트리를 얹는다. **Claude Code 세션 밖에서 실행한다.**
+Place the work tree over `~/.claude` without deleting it. **Run this outside a Claude Code session.**
 
 ```bash
 cp -a ~/.claude ~/.claude.backup.$(date +%Y%m%d)
@@ -53,177 +53,172 @@ git fetch origin
 git checkout -f -b main origin/main
 ```
 
-### 2. 설정 반영
+### 2. Apply configuration
 
 ```bash
 ~/.claude/bootstrap.sh
 ```
 
-`mcp.json` 의 `mcpServers` 를 `~/.claude.json` 에 반영하고, `settings.shared.json` 을 `~/.claude/settings.json` 에 병합한다. 기존 `permissions`, `oauthAccount`, 캐시는 보존된다. 재실행해도 결과가 같다.
+Applies `mcpServers` from `mcp.json` to `~/.claude.json` and merges `settings.shared.json` into `~/.claude/settings.json`. Existing `permissions`, `oauthAccount`, and caches are preserved. Re-running produces the same result.
 
-### 3. 환경변수
+### 3. Environment variables
 
-`mcp.json` 이 참조하는 환경변수를 설정한다. 미설정 시 해당 서버만 연결에 실패하고 나머지는 정상 동작한다.
+Set the environment variables referenced by `mcp.json`. If one is unset, only the corresponding server fails to connect; the rest work normally.
 
-### 4. 선행 조건
+### 4. Prerequisites
 
-| 대상 | 확인 |
+| Target | Check |
 |---|---|
-| `jq` | `bootstrap.sh` 가 사용한다. `brew install jq` |
+| `jq` | Used by `bootstrap.sh`. `brew install jq` |
 
-자동 동기화에 추가 의존성은 없다. 파일 와처를 쓰지 않으므로 `fswatch` 가 필요하지 않다.
+Auto-sync has no additional dependencies. It uses no file watcher, so `fswatch` is not required.
 
-### 5. Claude Code 재시작
+### 5. Restart Claude Code
 
-### 6. 자동 동기화 (선택)
+### 6. Auto-sync (optional)
 
 ```bash
 ~/.claude/bootstrap.sh --with-autosync
 ```
 
-이 머신에서도 변경을 자동으로 커밋·푸시하려면 설치한다. 아래 `자동 동기화` 절 참고.
+Install this if this machine should also commit and push changes automatically. See the `Auto-Sync` section below.
 
-## 다른 머신 동기화
+## Syncing Other Machines
 
 ```bash
 cd ~/.claude && git pull && ./bootstrap.sh
 ```
 
-자동 동기화가 설치된 머신에서는 로컬 변경이 이미 push 되어 있다. `git pull` 만으로 충분하다.
+On machines with auto-sync installed, local changes are already pushed. `git pull` alone is sufficient.
 
-## 자동 동기화
+## Auto-Sync
 
-추적 대상 파일이 바뀌면 자동으로 커밋·푸시한다. 편집 주체(Claude Code, 에디터, `git pull`)와
-무관하게 동작한다.
+Automatically commits and pushes when a tracked file changes. It works regardless of the editing agent (Claude Code, an editor, `git pull`).
 
 ```bash
-./bootstrap.sh --with-autosync          # 설치
-./bin/install-autosync.sh --uninstall   # 제거
+./bootstrap.sh --with-autosync          # install
+./bin/install-autosync.sh --uninstall   # uninstall
 ```
 
-기본값으로는 설치되지 않는다. 설정만 필요한 머신에서 데몬이 돌지 않게 하기 위해서다.
+It is not installed by default, so that no daemon runs on machines that only need the configuration.
 
-설치 시 `BatchMode` 로 `git ls-remote` 를 먼저 시도한다. 비대화식 SSH 접근이 안 되면
-설치하지 않는다 — 조용히 실패만 하는 데몬을 세우지 않기 위해서다.
-재실행해도 결과가 같다.
+During installation, `git ls-remote` is attempted first with `BatchMode`. If non-interactive SSH access fails, it is not installed — to avoid setting up a daemon that only fails silently.
+Re-running produces the same result.
 
-### 동작
+### Behavior
 
-launchd 가 120초마다 `bin/auto-sync.sh` 를 실행한다. 상주 프로세스가 없다 —
-깨어나서 `git status` 를 묻고(약 8ms) 종료한다.
+launchd runs `bin/auto-sync.sh` every 120 seconds. There is no resident process — it wakes up, queries `git status` (about 8ms), and exits.
 
-| 단계 | 내용 |
+| Step | Description |
 |---|---|
-| 선검사 | `.git/` 에 진행 중 작업 마커(`rebase-merge`, `rebase-apply`, `MERGE_HEAD`, `CHERRY_PICK_HEAD`, `REVERT_HEAD`, `BISECT_LOG`, `index.lock`)가 있거나 브랜치가 `main` 이 아니면 아무것도 하지 않는다 |
-| 변경 판정 | `.gitignore` 화이트리스트를 통과한 변경만 대상이다. 런타임 데이터는 보이지 않는다 |
-| 디바운스 | 마지막 변경 후 90초간 조용할 때까지 기다린다. 연속 편집이 커밋 하나로 합쳐지고, 에디터의 부분 쓰기가 배제된다 |
-| 게이트 | 경로 허용목록 + 자격증명 파일명·내용 패턴 + 바이너리·256KB 초과 차단. 통과 못 하면 **스테이징조차 하지 않고** 중단하고 알린다 |
-| 커밋 | 네트워크보다 먼저. 오프라인에서도 작업이 보존된다 |
-| 푸시 | fast-forward 만. 원격이 앞서 있으면 멈추고 알린다. 분기 감지용 `fetch` 는 15분 간격으로만 한다 |
+| Pre-check | Does nothing if `.git/` contains an in-progress operation marker (`rebase-merge`, `rebase-apply`, `MERGE_HEAD`, `CHERRY_PICK_HEAD`, `REVERT_HEAD`, `BISECT_LOG`, `index.lock`) or the branch is not `main` |
+| Change detection | Only changes that pass the `.gitignore` whitelist are considered. Runtime data is invisible |
+| Debounce | Waits until 90 seconds pass with no change. Consecutive edits merge into one commit, and partial writes by editors are excluded |
+| Gate | Path allowlist + credential filename and content patterns + binary and >256KB blocking. On failure, it stops **without even staging** and sends a notification |
+| Commit | Before any network access. Work is preserved even offline |
+| Push | Fast-forward only. If the remote is ahead, it stops and sends a notification. The `fetch` used for divergence detection runs only every 15 minutes |
 
-### 하지 않는 것
+### What it never does
 
-`rebase`, `merge`, `pull`, `stash`, `reset`, `clean`, force-push 를 쓰지 않는다
-(`--force-with-lease` 조차 쓰지 않는다). 쓰기 작업은 `add`·`commit`·`push`(force 없음) 세 개뿐이다.
-force 없는 push 는 서버측 fast-forward 검사가 다른 머신의 작업을 덮어쓰는 것을 불가능하게 만든다.
+It never uses `rebase`, `merge`, `pull`, `stash`, `reset`, `clean`, or force-push
+(not even `--force-with-lease`). Its only write operations are `add`, `commit`, and `push` (without force).
+A push without force lets the server-side fast-forward check make it impossible to overwrite another machine's work.
 
-분기 해소는 유저 판단으로 남긴다. `CLAUDE.md` 의 Git Safety Rules 를 따른다.
+Resolving divergence is left to the user. Follow the Git Safety Rules in `CLAUDE.md`.
 
-### 원격이 앞서 있을 때
+### When the remote is ahead
 
-알림이 오면 로컬 커밋은 이미 되어 있고 push 만 보류된 상태다. 직접 통합한다.
+When a notification arrives, the local commit has already been made and only the push is pending. Integrate manually.
 
 ```bash
 cd ~/.claude
-git log --oneline origin/main..HEAD    # 로컬에만 있는 커밋
-git log --oneline HEAD..origin/main    # 원격에만 있는 커밋
+git log --oneline origin/main..HEAD    # commits only in local
+git log --oneline HEAD..origin/main    # commits only in remote
 ```
 
-통합 방법(merge 또는 rebase)을 판단해 실행한 뒤 push 한다.
+Decide on the integration method (merge or rebase), run it, then push.
 
-### 플러그인 공유
+### Plugin sharing
 
-플러그인을 설치하면 **공유 목록에 자동 반영되어 push 된다.** 기억할 것이 없다.
+When a plugin is installed, **it is automatically added to the shared list and pushed.** Nothing needs to be remembered.
 
-공유되는 것은 **목록이고 코드가 아니다.**
+What is shared is **the list, not the code.**
 
-| | 내용 | 추적 |
+| | Contents | Tracked |
 |---|---|---|
-| `settings.shared.json` | 어떤 플러그인을 쓰고 출처가 어디인지 | O |
-| `plugins/` | 내려받은 플러그인 코드 (47MB) | X |
+| `settings.shared.json` | Which plugins are used and where they come from | O |
+| `plugins/` | Downloaded plugin code (47MB) | X |
 
-새 머신에서 `bootstrap.sh` 를 실행하면 목록이 `settings.json` 에 병합되고,
-Claude Code 가 그 목록을 읽어 플러그인을 직접 내려받는다. 수동 설치가 필요 없다.
-`package.json` 과 `node_modules/` 의 관계와 같다.
+Running `bootstrap.sh` on a new machine merges the list into `settings.json`,
+and Claude Code reads that list and downloads the plugins itself. No manual installation is needed.
+This is the same relationship as `package.json` and `node_modules/`.
 
-#### 공개 마켓플레이스만 자동 추가한다
+#### Only public marketplaces are added automatically
 
-**이 레포는 public 이다.** 구분 없이 자동 추가하면 사내 마켓플레이스 이름과
-source URL 이 공개된다. 데몬의 시크릿 게이트는 이를 잡지 못한다 —
-마켓플레이스 이름은 자격증명 패턴이 아니다.
+**This repository is public.** Adding marketplaces automatically without distinction would expose internal marketplace names and source URLs. The daemon's secret gate does not catch this —
+a marketplace name is not a credential pattern.
 
-`bin/sync-plugins.sh` 가 각 마켓플레이스의 GitHub 레포를 **미인증**으로 조회한다.
+`bin/sync-plugins.sh` queries each marketplace's GitHub repository **unauthenticated**.
 
-| 응답 | 판정 |
+| Response | Verdict |
 |---|---|
-| 200 | 공개 → 자동 추가 |
-| 404 | 비공개 또는 없음 → 추가하지 않음 (영구 캐시) |
-| 그 외 (000·5xx·429) | 확인 실패 → 추가하지 않고 **다음 실행에서 재시도** (캐시하지 않음) |
+| 200 | Public → added automatically |
+| 404 | Private or nonexistent → not added (cached permanently) |
+| Other (000, 5xx, 429) | Check failed → not added, **retried on the next run** (not cached) |
 
-미인증으로 조회하는 이유: `gh` 로 인증하면 유저가 접근 가능한 비공개 레포도 200 이 되어
-판정이 무의미해진다. 미인증 200 은 "누구나 볼 수 있다" 와 같다.
+Why unauthenticated: authenticating with `gh` returns 200 for private repositories the user can access, which makes the verdict meaningless. An unauthenticated 200 means "anyone can see it."
 
-일시적 장애를 영구 판정으로 굳히지 않도록 **404 만 캐시한다.**
-공개 레포가 한 번의 네트워크 오류로 영구히 동기화되지 않는 것을 막는다.
+**Only 404 is cached**, so that a transient failure does not become a permanent verdict.
+This prevents a public repository from never syncing because of a single network error.
 
-사내 플러그인을 공유하려면 `settings.shared.json` 을 직접 편집한다.
+To share an internal plugin, edit `settings.shared.json` directly.
 
-#### 진단
+#### Diagnostics
 
 ```bash
 grep sync-plugins ~/.claude/.git/auto-sync.log
 cat ~/.claude/.git/plugin-visibility.cache
 ```
 
-판정 캐시를 지우면 다음 실행에서 다시 조회한다.
+Deleting the verdict cache causes the next run to query again.
 
-### 조정 가능한 값
+### Tunable values
 
-| 값 | 기본 | 위치 |
+| Value | Default | Location |
 |---|---|---|
-| 실행 간격 | 120초 | `com.zoeyul.claude-autosync.plist` 의 `StartInterval` |
-| 디바운스 | 90초 | `bin/auto-sync.sh` 의 `QUIET_SECONDS` |
-| `fetch` 주기 | 900초 | `bin/auto-sync.sh` 의 `FETCH_INTERVAL` |
-| 로그 로테이션 | 1MB | `bin/auto-sync.sh` 의 `MAX_LOG_BYTES` |
+| Run interval | 120 seconds | `StartInterval` in `com.zoeyul.claude-autosync.plist` |
+| Debounce | 90 seconds | `QUIET_SECONDS` in `bin/auto-sync.sh` |
+| `fetch` interval | 900 seconds | `FETCH_INTERVAL` in `bin/auto-sync.sh` |
+| Log rotation | 1MB | `MAX_LOG_BYTES` in `bin/auto-sync.sh` |
 
-마지막 편집부터 push 까지 최악 약 3.5분. 간격과 디바운스를 60/60 으로 낮추면 약 2분이다.
-`StartInterval` 을 60초 미만으로 두는 것은 의미가 없다 (launchd 가 스폰 속도에 하한을 둔다).
+The worst case from the last edit to push is about 3.5 minutes. Lowering the interval and debounce to 60/60 makes it about 2 minutes.
+Setting `StartInterval` below 60 seconds has no effect (launchd enforces a lower bound on spawn rate).
 
-`QUIET_SECONDS` 와 `FETCH_INTERVAL` 은 환경변수로도 덮어쓸 수 있다. 수동 실행에 쓴다.
+`QUIET_SECONDS` and `FETCH_INTERVAL` can also be overridden with environment variables. Use this for manual runs.
 
 ```bash
-QUIET_SECONDS=0 ~/.claude/bin/auto-sync.sh    # 디바운스 없이 즉시 실행
+QUIET_SECONDS=0 ~/.claude/bin/auto-sync.sh    # run immediately without debounce
 ```
 
-### 진단
+### Diagnostics
 
 ```bash
 tail -f ~/.claude/.git/auto-sync.log
 launchctl print gui/$(id -u)/com.zoeyul.claude-autosync
 ```
 
-| 로그 | 뜻 |
+| Log | Meaning |
 |---|---|
-| `DEBOUNCE` | 변경이 진행 중. 조용해지면 커밋한다 |
-| `SKIP` | git 작업 진행 중이거나 `main` 이 아니다 |
-| `BLOCK` | 게이트가 막았다. 해당 파일을 확인한다 |
-| `DIVERGED` | 원격이 앞서 있다. 위 절차로 통합한다 |
-| `COMMIT` / `PUSH ok` | 정상 |
+| `DEBOUNCE` | Changes are in progress. Commits once quiet |
+| `SKIP` | A git operation is in progress, or the branch is not `main` |
+| `BLOCK` | The gate blocked it. Check the file in question |
+| `DIVERGED` | The remote is ahead. Integrate using the procedure above |
+| `COMMIT` / `PUSH ok` | Normal |
 
-스크립트 자체가 죽는 경우(문법 오류 등)는 `auto-sync.log` 에 남지 않는다.
-`.git/auto-sync.launchd.log` 를 본다 — launchd 가 받은 stderr 다. 정상이면 비어 있다.
+Failures of the script itself (syntax errors, etc.) are not recorded in `auto-sync.log`.
+Check `.git/auto-sync.launchd.log` — the stderr received by launchd. It is empty when everything is normal.
 
-상태 파일은 `.git/` 안에 둔다 (`auto-sync.log`, `.launchd.log`, `.lock`, `.state`, `.notified.*`).
-`.gitignore` 매칭 대상이 아니므로 데몬이 자기 자신을 트리거하지 않는다.
+State files are kept inside `.git/` (`auto-sync.log`, `.launchd.log`, `.lock`, `.state`, `.notified.*`).
+They do not match `.gitignore`, so the daemon does not trigger itself.
 
-알림은 사유별로 한 번만 보낸다. 성공하면 해제된다.
+Each notification is sent only once per reason. It is cleared on success.
