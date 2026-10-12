@@ -62,18 +62,6 @@
     "figma-dev-mode-mcp-server": {
       "type": "sse",
       "url": "http://127.0.0.1:3845/sse"
-    },
-    "taskmaster-ai": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "task-master-ai"
-      ],
-      "env": {
-        "TASK_MASTER_TOOLS": "standard",
-        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}"
-      }
     }
   }
 }
