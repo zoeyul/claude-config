@@ -1,7 +1,8 @@
 {
   "enabledPlugins": {
     "claude-md-management@claude-plugins-official": true,
-    "attention-span@attention-span": true
+    "attention-span@attention-span": true,
+    "feature-loop@zoeyul-plugins": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
@@ -14,6 +15,12 @@
       "source": {
         "source": "github",
         "repo": "alexgreensh/attention-span"
+      }
+    },
+    "zoeyul-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "zoeyul/claude-plugins"
       }
     }
   },
