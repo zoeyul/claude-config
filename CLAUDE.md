@@ -11,8 +11,8 @@
   - **State the source inline with the claim.** "X is true (verified: `file:line`, command output)" or "X is likely (not verified)". A claim carrying no source marker is itself a violation — the marker is what makes compliance visible.
   - **When citing a comment, doc, or rule as evidence, confirm what it actually governs** before applying it. Do not extend a rule written for A to B because they sit next to each other or look analogous.
   - **A subagent's report is a lead, not evidence.** Before repeating a quote or fact it returned, open the source and read it yourself — subagents fabricate quotes and attribute them to real documents. "The agent verified it" is not verification.
-  - **사용자가 직접 관측해 보고한 것은 1차 증거다.** 화면에서 본 증상, 재현 결과, 기기 동작 보고는 내가 재측정해 "확인" 할 대상이 아니다. 내 측정이 사용자 보고와 다르면 **내 측정을 의심한다.** 사용자가 본 것을 숫자로 재증명하려 들지 않는다.
-  - **같은 목적의 시도가 2번 실패하면 멈추고 보고한다.** 방식을 바꿔 세 번째를 시도하지 않는다("이번엔 될 것" 은 같은 실패의 변형이다). 접근 자체가 틀렸을 가능성을 먼저 사용자에게 말하고 지시를 받는다.
+  - **What the user directly observed and reported is primary evidence.** Symptoms seen on screen, reproduction results, and reports of device behavior are not something to re-measure and "confirm." When my measurement disagrees with the user's report, **suspect my measurement.** Never try to re-prove with numbers what the user saw.
+  - **After two failed attempts at the same goal, stop and report.** Never switch methods for a third attempt ("this time it will work" is a variant of the same failure). First tell the user the approach itself may be wrong, and wait for direction.
 - ⛔ **Establish the standard before evaluating the code.** When judging whether a design or implementation is correct, the order is: (1) determine what authoritative guidance says — official vendor docs, the platform's own recommendations, established practice; (2) state that standard and its source; (3) only then measure the codebase against it.
   - **Never derive the standard from the codebase being reviewed.** Comments, local conventions, and existing patterns record what someone decided, not what is correct. A young or in-progress codebase has no settled convention to appeal to, and treating it as the authority makes every new file read as a new rule — the verdict then flips with whichever comment was read last.
   - The codebase is evidence of *current state*, never of *correctness*. Use it to answer "what does this do," not "what should this be."
@@ -49,7 +49,7 @@ git diff | grep -E "^\+\s*(//|#|\*|/\*)"
 ## 메모리
 
 Never save to automatic memory on your own initiative. Save only when the user explicitly requests it.
-내가 유용하다고 판단한 것, 반성·교훈·실수 기록, 세션에서 알게 된 사실도 스스로 남기지 않는다. 남길 가치가 있어 보이면 **쓰지 말고 물어본다.**
+This includes things I judge useful, reflections, lessons, mistake records, and facts learned in the session. If something seems worth keeping, **ask instead of writing it.**
 
 ## Task Management
 
@@ -99,13 +99,13 @@ When a request to audit or improve CLAUDE.md arrives, use the `claude-md-improve
 - Creating a new branch (`git switch -c` / `git checkout -b`)
 - Switching to an existing branch (`git switch <name>` / `git checkout <name>`, without a file path)
 - `git add` — stage by naming files. Never use `-A` / `.` indiscriminately
-- `git commit` — **작업 브랜치에서만.** 커밋 직전 `git branch --show-current` 로 현재 브랜치를 확인한다. `main`/`master` 면 커밋하지 말고, 브랜치를 먼저 따자고 제안한다 (PR 머지 후 브랜치가 main 으로 바뀐 걸 모른 채 커밋하는 사고가 실제로 있었다)
+- `git commit` — **on a work branch only.** Check the current branch with `git branch --show-current` right before committing. If it is `main`/`master`, do not commit; propose creating a branch first (there was a real incident of committing without noticing the branch had switched to main after a PR merge)
 - `git push` on a feature branch — when it is not main/master and carries no `--force` variant
 - Creating a PR (`gh pr create`)
 - Renaming a **local, unpushed** branch (`git branch -m`) — no commit or worktree change, trivially reversible. If the branch already exists on the remote, treat it as forbidden (renaming would break teammates' tracking branches)
 
 ### Never execute without individual permission
-- ⛔ `main`/`master` 에 직접 커밋 (`git commit`)
+- ⛔ Committing directly to `main`/`master` (`git commit`)
 - ⛔ `git reset` — every form, including `--hard`, `--soft`, `HEAD`
 - ⛔ `git commit --amend`, `git rebase -i`, squash — every operation that rewrites history
 - ⛔ force-push (`--force` / `--force-with-lease`), any push to `main`/`master`
@@ -113,11 +113,11 @@ When a request to audit or improve CLAUDE.md arrives, use the `claude-md-improve
 - ⛔ `git branch -d`/`-D` (commit loss risk), `git branch -m` on a **pushed** branch, creating or deleting `git tag`
 - ⛔ `git merge`, `git rebase`, `git pull`, `git stash`, `git cherry-pick`, `git revert`, `git clean`
 
-사용자가 지시하면 **위험성 1–3줄 고지 → 한 번 되묻기 → 실행**한다.
-"규칙상 못 한다"며 명령어만 넘기고 떠넘기지 않는다. 재지시는 곧 승인이므로 다시 묻지 않는다.
+When the user instructs one of these: **state the risk in 1–3 lines → confirm once → execute.**
+Never hand back just the command saying "the rules don't allow it." A repeated instruction is approval; do not ask again.
 
-**고지는 위 금지 목록에만.** 허용 목록(commit·add·push feature·브랜치 생성/전환·PR)과
-읽기 전용(status·log·diff·show)은 고지도 되묻기도 없이 바로 실행한다.
+**Risk notices apply only to the forbidden list above.** The permitted list (commit, add, feature push, branch create/switch, PR)
+and read-only commands (status, log, diff, show) run immediately, with no notice or confirmation.
 
 Read-only git (`status`, `log`, `diff`, `show`, `ls-files`, `branch` queries) is unrestricted.
 
@@ -155,12 +155,12 @@ A review is a sample, not a proof. Never run it until the finding count reaches 
 - The work process, workflow steps
 - Quality scores, verification details
 
-**⛔ PR·이슈 코멘트는 초안을 보여주고 게시 승인을 받은 뒤 올린다** (작업 진행 동의는 게시 승인이 아님)
+**⛔ Show a draft of any PR or issue comment and get approval before posting it** (agreement to proceed with the work is not approval to post)
 
-**리뷰 코멘트 작성 규칙:**
-- 문제(무엇이 왜 잘못되는지)는 근거(`file:line`, 동작 경로)와 함께 구체적으로 쓴다
-- 해결책은 구체적으로 지시하지 않는다 — 코드 스니펫, 함수명·호출 위치 지정, "X 를 Y 로 바꾸세요" 식 처방 금지
-- 대신 일반적으로 권장되는 방향만 제시하고, "~하면 좋을 것 같습니다" 로 맺는다
+**Review comment rules:**
+- State the problem (what is wrong and why) concretely, with evidence (`file:line`, execution path)
+- Never prescribe the fix — no code snippets, no naming functions or call sites, no "change X to Y"
+- Instead suggest only the generally recommended direction, phrased as a suggestion (Korean comments end with "~하면 좋을 것 같습니다")
   - ✅ "401 과 403 을 구분해서 처리하면 좋을 것 같습니다"
   - ❌ "`expireSession` 은 401 에서만 호출하세요" / "`void expireSession(...).catch(...)` 로 처리하세요"
 
