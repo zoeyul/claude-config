@@ -54,3 +54,6 @@ credentials.json
 
 # OS
 .DS_Store
+
+# Claude Code 가 자동 동기화하는 스킬. 직접 작성한 것이 아니다.
+skills/synced/
