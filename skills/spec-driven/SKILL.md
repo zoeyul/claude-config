@@ -23,7 +23,7 @@ Calling `/spec-driven` with no argument prints usage.
 ### Collect input
 1. **Task name** (kebab-case recommended)
 2. **Task description** (what, why)
-3. **Save location** (global: `~/.claude/plans/`, project: `.claude/specs/`)
+3. Save location is fixed: `~/.claude/plans/<task-name>.md`. Do not ask, and never write a Spec inside a project repository.
 
 ### Spec file structure
 
@@ -130,7 +130,7 @@ WHILE data synchronization is in progress THE SYSTEM SHALL display the progress 
 ## verify - verify the Spec
 
 ### 1. Load the Spec
-- Find the latest Spec in `~/.claude/plans/` or `.claude/specs/`
+- Find the latest Spec in `~/.claude/plans/`
 - When the user names a file, use that one
 
 ### 2. Verify Requirements

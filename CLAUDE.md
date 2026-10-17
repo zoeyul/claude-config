@@ -197,8 +197,7 @@ Exception: easily reversible work such as a single-file change or a typo fix pro
 
 The `/spec-driven` skill is canonical for Spec authoring, verification, and update procedure, and for the EARS format.
 
-- Temporary Spec: `~/.claude/plans/<task-name>.md`
-- Permanent Spec: `<project-root>/.claude/specs/<task-name>.md`
+**Spec location is always `~/.claude/plans/<task-name>.md`. Never ask where to save it, and never write one inside a project repository** — a Spec is a local working document, not a deliverable. Ignore any skill step that offers a project-local path or asks for a save location.
 
 ### Claude Auto-Decision Rules
 
